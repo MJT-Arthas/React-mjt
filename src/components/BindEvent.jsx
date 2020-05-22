@@ -1,42 +1,66 @@
 import React from "react";
+import store from "../store";
+import {
+  CHANGE_INPUT_VALUE,
+  ADD_TODO_ITEM,
+  DELETE_TODO_ITEM,
+} from "../store/actionTypes";
 
-export default class Bindevent extends React.Component {
+export default class BindEvent extends React.Component {
   constructor() {
     super();
-    this.state = {
-      msg: "111",
-    };
+    (this.state = store.getState()), console.log(store.getState());
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleInputChange2 = this.handleInputChange2.bind(this);
+    this.handleStoreChange = this.handleStoreChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    store.subscribe(this.handleStoreChange);
   }
 
   render() {
     return (
       <div>
-        Event组件
         <hr />
-        <button onClick={() => this.show()}>按钮</button>
+        <button onClick={this.handleClick}>按钮</button>
         <h1>{this.state.msg}</h1>
-				<input type='text' style={{width:"100%"}} value={this.state.msg} onChange={(e)=>this.txtChange(e)}/>
-				<hr/>
-				<input type='text' style={{width:"100%"}} value={this.state.msg} onChange={(e)=>this.txtChange2(e)} ref="txt"/>
+        <input
+          type="text"
+          style={{ width: "100%" }}
+          value={this.state.msg}
+          onChange={this.handleInputChange}
+        />
+        <hr />
+        <input
+          type="text"
+          style={{ width: "100%" }}
+          value={this.state.msg}
+          onChange={this.handleInputChange2}
+          ref="txt"
+        />
       </div>
     );
-	}
-	txtChange=(e)=>{
-		// const newValue = e.target.value
-		this.setState({
-      msg: `${e.target.value}`,
-    });
-	}
-	txtChange2=(e)=>{
-		// const newValue = e.target.value
-		this.setState({
-      msg: `${this.refs.txt.value}`,
-    });
-	}
-  show = () => {
-    console.log("ok");
-    this.setState({
-      msg: "123",
-    });
-  };
+  }
+  handleInputChange(e) {
+    const action = {
+      type: CHANGE_INPUT_VALUE,
+      value: e.target.value,
+    };
+    store.dispatch(action);
+  }
+  handleInputChange2(e) {
+    const action = {
+      type: DELETE_TODO_ITEM,
+      value: e.target.value,
+    };
+    store.dispatch(action);
+  }
+  handleStoreChange() {
+    this.setState(store.getState());
+  }
+  handleClick() {
+    const action = {
+      type: ADD_TODO_ITEM,
+    };
+    store.dispatch(action);
+  }
 }
